@@ -1,0 +1,759 @@
+<!DOCTYPE html>  <html lang="en">    <head>    
+<meta charset="UTF-8">    
+<meta name="viewport" content="width=device-width, initial-scale=1.0">    
+<title>BookNest - Online Book Store</title>  <style>    
+* {    
+    margin: 0;    
+    padding: 0;    
+    box-sizing: border-box;    
+}    html {
+scroll-behavior: smooth;
+}
+
+body {
+font-family: Arial, sans-serif;
+background: #f8f7f2;
+color: #252b25;
+}
+
+header {
+background: white;
+padding: 18px 6%;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 15px;
+flex-wrap: wrap;
+position: sticky;
+top: 0;
+z-index: 5;
+box-shadow: 0 2px 10px #0000000d;
+}
+
+.logo {
+color: #246747;
+font-size: 25px;
+font-weight: bold;
+}
+
+nav {
+display: flex;
+gap: 20px;
+}
+
+nav a {
+text-decoration: none;
+color: #333;
+font-weight: bold;
+}
+
+button {
+cursor: pointer;
+}
+
+.cart-btn, .shop-btn, .add-btn, .checkout {
+background: #246747;
+color: white;
+border: none;
+border-radius: 7px;
+padding: 11px 15px;
+font-weight: bold;
+}
+
+.cart-btn:hover, .shop-btn:hover,
+.add-btn:hover, .checkout:hover {
+background: #174a32;
+}
+
+.hero {
+min-height: 380px;
+padding: 65px 8%;
+display: flex;
+align-items: center;
+background:
+linear-gradient(90deg, #f0e8d9 0%, #f0e8d9ed 48%, #f0e8d933 100%),
+url("https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1400&q=80")
+center/cover;
+}
+
+.hero-content {
+max-width: 570px;
+}
+
+.eyebrow {
+color: #246747;
+font-size: 12px;
+font-weight: bold;
+letter-spacing: 2px;
+margin-bottom: 12px;
+}
+
+.hero h1 {
+font-family: Georgia, serif;
+font-size: clamp(38px, 6vw, 60px);
+line-height: 1.12;
+margin-bottom: 18px;
+}
+
+.hero p {
+line-height: 1.7;
+margin-bottom: 25px;
+}
+
+.shop-btn {
+display: inline-block;
+text-decoration: none;
+}
+
+main {
+padding: 50px 6%;
+}
+
+.section-top {
+display: flex;
+justify-content: space-between;
+align-items: center;
+flex-wrap: wrap;
+gap: 15px;
+}
+
+h2 {
+font-family: Georgia, serif;
+font-size: 32px;
+}
+
+#search {
+width: 300px;
+max-width: 100%;
+padding: 12px;
+border: 1px solid #d8d8d0;
+border-radius: 8px;
+font-size: 15px;
+outline-color: #246747;
+}
+
+.filters {
+display: flex;
+flex-wrap: wrap;
+gap: 10px;
+margin: 25px 0;
+}
+
+.filter {
+padding: 9px 16px;
+border: 1px solid #d8d8d0;
+background: white;
+border-radius: 25px;
+}
+
+.filter.active {
+background: #246747;
+color: white;
+border-color: #246747;
+}
+
+.book-grid {
+display: grid;
+grid-template-columns: repeat(4, minmax(0, 1fr));
+gap: 22px;
+}
+
+.book-card {
+background: white;
+padding: 13px;
+border: 1px solid #e8e6df;
+border-radius: 12px;
+transition: 0.2s;
+}
+
+.book-card:hover {
+transform: translateY(-4px);
+box-shadow: 0 8px 20px #00000012;
+}
+
+.book-card img {
+width: 100%;
+height: 210px;
+object-fit: cover;
+background: #eee8dc;
+border-radius: 7px;
+}
+
+.category {
+display: inline-block;
+margin-top: 12px;
+background: #eaf3ec;
+color: #246747;
+padding: 4px 9px;
+border-radius: 15px;
+font-size: 11px;
+}
+
+.book-card h3 {
+font-size: 17px;
+margin: 9px 0 4px;
+}
+
+.author {
+color: #777;
+font-size: 13px;
+min-height: 20px;
+}
+
+.book-bottom {
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 8px;
+margin-top: 14px;
+}
+
+.price {
+color: #246747;
+font-size: 19px;
+font-weight: bold;
+}
+
+.add-btn {
+padding: 9px 10px;
+font-size: 12px;
+}
+
+.empty {
+grid-column: 1 / -1;
+text-align: center;
+padding: 35px;
+color: #777;
+}
+
+.about {
+margin-top: 55px;
+background: #eee9dc;
+text-align: center;
+padding: 45px 8%;
+border-radius: 12px;
+}
+
+.about p {
+max-width: 650px;
+margin: 12px auto 0;
+line-height: 1.8;
+color: #555;
+}
+
+footer {
+background: #203d30;
+color: white;
+text-align: center;
+padding: 22px;
+}
+
+/* Shopping cart panel */
+
+.overlay {
+position: fixed;
+inset: 0;
+background: #0008;
+z-index: 9;
+display: none;
+}
+
+.overlay.show {
+display: block;
+}
+
+.cart-panel {
+position: fixed;
+z-index: 10;
+top: 0;
+right: -450px;
+width: min(420px, 100%);
+height: 100%;
+height: 100dvh;
+background: white;
+padding: 22px;
+display: flex;
+flex-direction: column;
+transition: right 0.3s ease;
+}
+
+.cart-panel.open {
+right: 0;
+}
+
+.cart-heading {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding-bottom: 15px;
+border-bottom: 1px solid #eee;
+}
+
+.cart-heading h2 {
+font-size: 25px;
+}
+
+.close-btn {
+border: none;
+background: #eee;
+border-radius: 50%;
+width: 35px;
+height: 35px;
+font-size: 18px;
+}
+
+#cart-items {
+overflow-y: auto;
+flex: 1;
+}
+
+.empty-cart {
+text-align: center;
+color: #777;
+margin-top: 35px;
+}
+
+.cart-item {
+display: flex;
+gap: 12px;
+align-items: center;
+padding: 14px 0;
+border-bottom: 1px solid #eee;
+}
+
+.cart-item img {
+width: 55px;
+height: 70px;
+object-fit: cover;
+border-radius: 5px;
+}
+
+.item-info {
+flex: 1;
+min-width: 0;
+}
+
+.item-info h4 {
+font-size: 14px;
+}
+
+.item-info p {
+color: #246747;
+font-weight: bold;
+}
+
+.quantity {
+display: flex;
+gap: 9px;
+align-items: center;
+margin-top: 7px;
+}
+
+.quantity button {
+width: 26px;
+height: 26px;
+border: 1px solid #ddd;
+background: white;
+border-radius: 4px;
+}
+
+.remove-btn {
+color: #b42318;
+background: none;
+border: none;
+font-size: 12px;
+}
+
+.cart-footer {
+border-top: 1px solid #ddd;
+padding-top: 16px;
+}
+
+.cart-footer h3 {
+margin-bottom: 13px;
+}
+
+.checkout {
+width: 100%;
+padding: 13px;
+}
+
+.note {
+color: #777;
+text-align: center;
+font-size: 11px;
+margin-top: 10px;
+}
+
+@media (max-width: 900px) {
+.book-grid {
+grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+}
+
+@media (max-width: 650px) {
+header {
+padding: 14px 4%;
+}
+
+nav {    
+    order: 3;    
+    width: 100%;    
+    justify-content: center;    
+    gap: 25px;    
+}    
+
+.hero {    
+    padding: 50px 6%;    
+    min-height: 340px;    
+}    
+
+main {    
+    padding: 38px 4%;    
+}    
+
+.book-grid {    
+    grid-template-columns: repeat(2, minmax(0, 1fr));    
+    gap: 12px;    
+}    
+
+.book-card {    
+    padding: 9px;    
+}    
+
+.book-card img {    
+    height: 165px;    
+}    
+
+.book-card h3 {    
+    font-size: 15px;    
+}    
+
+.book-bottom {    
+    align-items: stretch;    
+    flex-direction: column;    
+}    
+
+.add-btn {    
+    width: 100%;    
+}    
+
+h2 {    
+    font-size: 27px;    
+}
+
+}
+
+@media (max-width: 350px) {
+.book-grid {
+grid-template-columns: 1fr;
+}
+
+.book-card img {    
+    height: 240px;    
+}
+
+}
+</style>  </head>  <body>  <header>
+<a class="logo" href="#home">📚 BookNest</a>  <nav>
+<a href="#home">Home</a>
+<a href="#books">Books</a>
+<a href="#about">About</a>
+
+</nav>    <button class="cart-btn" onclick="toggleCart()">    
+    🛒 Cart (<span id="cart-count">0</span>)    
+</button>  </header>  <section class="hero" id="home">    
+    <div class="hero-content">    
+        <div class="eyebrow">YOUR NEXT CHAPTER STARTS HERE</div>    
+        <h1>Find Your Next<br>Favourite Book.</h1>    
+        <p>    
+            Discover amazing stories, learn new skills,    
+            and explore new worlds with BookNest.    
+        </p>    
+        <a href="#books" class="shop-btn">Explore Books →</a>    
+    </div>    
+</section>  <main>    
+    <section id="books">    
+        <div class="section-top">    
+            <div>    
+                <div class="eyebrow">OUR COLLECTION</div>    
+                <h2>Popular Books</h2>    
+            </div>  <input    
+            type="search"    
+            id="search"    
+            placeholder="Search books or authors..."    
+            aria-label="Search books or authors"    
+        >    
+    </div>    <div class="filters">    
+    <button class="filter active" data-category="All">All Books</button>    
+    <button class="filter" data-category="Fiction">Fiction</button>    
+    <button class="filter" data-category="Self-Help">Self-Help</button>    
+    <button class="filter" data-category="Technology">Technology</button>    
+</div>    
+
+<div class="book-grid" id="book-grid"></div>
+
+</section>    <section class="about" id="about">    
+    <h2>About BookNest</h2>    
+    <p>    
+        BookNest is your online destination for discovering    
+        great books. Explore different categories, find your    
+        favourite reads, and enjoy a simple shopping experience.    
+    </p>    
+</section>  </main>  <footer>    
+    <p>© 2026 BookNest | Made for book lovers 📚</p>    
+</footer>  <div class="overlay" id="overlay" onclick="closeCart()"></div>  <aside class="cart-panel" id="cart-panel">    
+    <div class="cart-heading">    
+        <h2>Your Cart 🛒</h2>    
+        <button class="close-btn" onclick="closeCart()">✕</button>    
+    </div>  <div id="cart-items"></div>    <div class="cart-footer">    
+    <h3>Total: <span id="cart-total">₹0</span></h3>    
+    <button class="checkout" onclick="checkout()">Place Order</button>    
+    <p class="note">Demo only. No real payment is processed.</p>    
+</div>  </aside>  <script>    
+const books = [    
+    {    
+        id: 1,    
+        title: "Atomic Habits",    
+        author: "James Clear",    
+        category: "Self-Help",    
+        price: 450,    
+        image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=500&q=80"    
+    },    
+    {    
+        id: 2,    
+        title: "The Alchemist",    
+        author: "Paulo Coelho",    
+        category: "Fiction",    
+        price: 299,    
+        image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80"    
+    },    
+    {    
+        id: 3,    
+        title: "Rich Dad Poor Dad",    
+        author: "Robert Kiyosaki",    
+        category: "Self-Help",    
+        price: 399,    
+        image: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=500&q=80"    
+    },    
+    {    
+        id: 4,    
+        title: "The Great Gatsby",    
+        author: "F. Scott Fitzgerald",    
+        category: "Fiction",    
+        price: 249,    
+        image: "https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&w=500&q=80"    
+    },    
+    {    
+        id: 5,    
+        title: "Clean Code",    
+        author: "Robert C. Martin",    
+        category: "Technology",    
+        price: 599,    
+        image: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=500&q=80"    
+    },    
+    {    
+        id: 6,    
+        title: "Think and Grow Rich",    
+        author: "Napoleon Hill",    
+        category: "Self-Help",    
+        price: 349,    
+        image: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=500&q=80"    
+    },    
+    {    
+        id: 7,    
+        title: "Harry Potter",    
+        author: "J. K. Rowling",    
+        category: "Fiction",    
+        price: 499,    
+        image: "https://images.unsplash.com/photo-1629992101753-56d196c8aabb?auto=format&fit=crop&w=500&q=80"    
+    },    
+    {    
+        id: 8,    
+        title: "JavaScript Basics",    
+        author: "Web Development",    
+        category: "Technology",    
+        price: 399,    
+        image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=500&q=80"    
+    }    
+];    let cart = [];
+let activeCategory = "All";
+
+const grid = document.getElementById("book-grid");
+const search = document.getElementById("search");
+
+function displayBooks() {
+const query = search.value.toLowerCase().trim();
+
+const filtered = books.filter(book => {    
+    const matchesText =    
+        book.title.toLowerCase().includes(query) ||    
+        book.author.toLowerCase().includes(query);    
+
+    const matchesCategory =    
+        activeCategory === "All" ||    
+        book.category === activeCategory;    
+
+    return matchesText && matchesCategory;    
+});    
+
+if (filtered.length === 0) {    
+    grid.innerHTML =    
+        '<p class="empty">No books found. Try another search.</p>';    
+    return;    
+}    
+
+grid.innerHTML = filtered.map(book => `    
+    <article class="book-card">    
+        <img src="${book.image}" alt="${book.title}" loading="lazy">    
+        <span class="category">${book.category}</span>    
+        <h3>${book.title}</h3>    
+        <p class="author">By ${book.author}</p>    
+
+        <div class="book-bottom">    
+            <span class="price">₹${book.price}</span>    
+            <button class="add-btn" onclick="addToCart(${book.id})">    
+                + Add to Cart    
+            </button>    
+        </div>    
+    </article>    
+`).join("");
+
+}
+
+search.addEventListener("input", displayBooks);
+
+document.querySelectorAll(".filter").forEach(button => {
+button.addEventListener("click", () => {
+document.querySelector(".filter.active")
+?.classList.remove("active");
+
+button.classList.add("active");    
+    activeCategory = button.dataset.category;    
+    displayBooks();    
+});
+
+});
+
+function addToCart(id) {
+const book = books.find(book => book.id === id);
+const item = cart.find(item => item.id === id);
+
+if (item) {    
+    item.quantity++;    
+} else {    
+    cart.push({ ...book, quantity: 1 });    
+}    
+
+updateCart();    
+openCart();
+
+}
+
+function changeQuantity(id, amount) {
+const item = cart.find(item => item.id === id);
+
+if (!item) return;    
+
+item.quantity += amount;    
+
+if (item.quantity <= 0) {    
+    cart = cart.filter(item => item.id !== id);    
+}    
+
+updateCart();
+
+}
+
+function removeFromCart(id) {
+cart = cart.filter(item => item.id !== id);
+updateCart();
+}
+
+function updateCart() {
+const count = cart.reduce(
+(sum, item) => sum + item.quantity, 0
+);
+
+const total = cart.reduce(    
+    (sum, item) => sum + item.price * item.quantity, 0    
+);    
+
+document.getElementById("cart-count").textContent = count;    
+document.getElementById("cart-total").textContent =    
+    "₹" + total.toLocaleString("en-IN");    
+
+const container = document.getElementById("cart-items");    
+
+if (cart.length === 0) {    
+    container.innerHTML =    
+        '<p class="empty-cart">Your cart is empty. Add a book! 📚</p>';    
+    return;    
+}    
+
+container.innerHTML = cart.map(item => `    
+    <div class="cart-item">    
+        <img src="${item.image}" alt="${item.title}">    
+
+        <div class="item-info">    
+            <h4>${item.title}</h4>    
+            <p>₹${item.price}</p>    
+
+            <div class="quantity">    
+                <button onclick="changeQuantity(${item.id}, -1)">−</button>    
+                <span>${item.quantity}</span>    
+                <button onclick="changeQuantity(${item.id}, 1)">+</button>    
+            </div>    
+        </div>    
+
+        <button class="remove-btn"    
+            onclick="removeFromCart(${item.id})">Remove</button>    
+    </div>    
+`).join("");
+
+}
+
+function openCart() {
+document.getElementById("cart-panel").classList.add("open");
+document.getElementById("overlay").classList.add("show");
+}
+
+function closeCart() {
+document.getElementById("cart-panel").classList.remove("open");
+document.getElementById("overlay").classList.remove("show");
+}
+
+function toggleCart() {
+const panel = document.getElementById("cart-panel");
+
+if (panel.classList.contains("open")) {    
+    closeCart();    
+} else {    
+    openCart();    
+}
+
+}
+
+function checkout() {
+if (cart.length === 0) {
+alert("Your cart is empty. Please add a book first!");
+return;
+}
+
+const total = cart.reduce(    
+    (sum, item) => sum + item.price * item.quantity, 0    
+);    
+
+alert(    
+    "Thank you for visiting BookNest!\n" +    
+    "Demo order total: ₹" + total.toLocaleString("en-IN") +    
+    "\nNo real order or payment was made."    
+);
+
+}
+
+displayBooks();
+updateCart();
+</script>  </body>
+
+</html>
